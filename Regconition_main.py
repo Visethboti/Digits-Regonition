@@ -12,80 +12,60 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 from PIL import Image
+from pylab import array
 from pylab import *
 
+
 # Importing the dataset
-X = []
-y = []
-
-#pil_im = Image.open('3_2.png')
-pil_im = Image.open('3_1.png').convert('L')
-out = pil_im.resize((128,128))
-#imshow(out)
-#show()
-imArray = array(out).flatten()
-
-X.append(imArray)
-y.append(1)
-
-pil_im = Image.open('3_2.png').convert('L')
-out = pil_im.resize((128,128))
-imArray = array(out).flatten()
-X.append(imArray)
-y.append(1)
-
-pil_im = Image.open('3_3.png').convert('L')
-out = pil_im.resize((128,128))
-imArray = array(out).flatten()
-X.append(imArray)
-y.append(1)
-
-pil_im = Image.open('3_4.png').convert('L')
-out = pil_im.resize((128,128))
-imArray = array(out).flatten()
-X.append(imArray)
-y.append(1)
-
-pil_im = Image.open('4_1.png').convert('L')
-out = pil_im.resize((128,128))
-imArray = array(out).flatten()
-X.append(imArray)
-y.append(0)
-
-pil_im = Image.open('4_2.png').convert('L')
-out = pil_im.resize((128,128))
-imArray = array(out).flatten()
-X.append(imArray)
-y.append(0)
-
-
-pil_im = Image.open('4_3.png').convert('L')
-out = pil_im.resize((128,128))
-imArray = array(out).flatten()
-X_test.append(imArray)
-
-pil_im = Image.open('nig.png').convert('L')
-out = pil_im.resize((128,128))
-imArray = array(out).flatten()
-X_test.append(imArray)
-
-pil_im = Image.open('3_5.png').convert('L')
-out = pil_im.resize((128,128))
-imArray = array(out).flatten()
-X_test.append(imArray)
-
-pil_im = Image.open('3_6.png').convert('L')
-out = pil_im.resize((128,128))
-imArray = array(out).flatten()
-X_test.append(imArray)
-# Splitting the dataset into the Training set and Test set
-# from sklearn.model_selection import train_test_split
-# X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.25, random_state = 0)
-X_train = X
-y_train = y
+X_train = []
+y_train = []
 X_test = []
 y_test = []
-X_test.append(imArray)
+
+
+pil_im = Image.open('dataset/folder_test/test_2.png').convert('LA').resize((128,128))
+imArray = array(pil_im).flatten()
+width, height = pil_im.size 
+
+left = width / 4
+top = height / 4
+right = width / 4
+bottom = height / 4
+
+im1 = pil_im.crop((left, top, right, bottom)) 
+im1.show()
+
+imshow(pil_im)
+show()
+
+
+
+# Import Image to train
+for _ in range(0, 1):
+    for i in range(1, 31):
+        pil_im = Image.open('dataset/folder_3/3_{}.png'.format(i)).convert('LA').resize((128,128))
+        imArray = array(pil_im).flatten()
+        X_train.append(imArray)
+        y_train.append(3)
+
+    for i in range(1, 31):
+        pil_im = Image.open('dataset/folder_4/4_{}.png'.format(i)).convert('LA').resize((128,128))
+        imArray = array(pil_im).flatten()
+        X_train.append(imArray)
+        y_train.append(4)
+    
+    for i in range(1, 26):
+        pil_im = Image.open('dataset/folder_5/5_{}.png'.format(i)).convert('LA').resize((128,128))
+        imArray = array(pil_im).flatten()
+        X_train.append(imArray)
+        y_train.append(5)
+
+# test set
+X_test = []
+for i in range(1, 5):
+    pil_im = Image.open('dataset/folder_test/test_{}.png'.format(i)).convert('LA').resize((128,128))
+    imArray = array(pil_im).flatten()
+    X_test.append(imArray)
 
 
 # Feature Scaling
@@ -96,18 +76,31 @@ X_test = sc.transform(X_test)
 
 # Fitting Random Forest Classification to the Training set
 from sklearn.ensemble import RandomForestClassifier
-classifier = RandomForestClassifier(n_estimators = 10, criterion = 'entropy', random_state = 0)
+classifier = RandomForestClassifier(n_estimators = 100, criterion = 'entropy')
 classifier.fit(X_train, y_train)
 
-
+    
 
 # Predicting the Test set results
 y_pred = classifier.predict(X_test)
 
 # Making the Confusion Matrix
-from sklearn.metrics import confusion_matrix
-cm = confusion_matrix(y_test, y_pred)
+#from sklearn.metrics import confusion_matrix
+#cm = confusion_matrix(y_test, y_pred)
 
+
+import cv2
+import matplotlib.pyplot as plt
+import cvlib as cv
+from cvlib.object_detection import draw_bbox
+im = cv2.imread('folder_test/test_2.png.jpg')
+bbox, label, conf = cv.detect_common_objects(im)
+output_image = draw_bbox(im, bbox, label, conf)
+plt.imshow(output_image)
+plt.show()
+
+
+"""
 
 # Visualising the Training set results
 from matplotlib.colors import ListedColormap
@@ -146,3 +139,5 @@ plt.xlabel('Age')
 plt.ylabel('Estimated Salary')
 plt.legend()
 plt.show()
+
+"""
